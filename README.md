@@ -220,6 +220,8 @@ This plugin is one of six that form a complete meta-cognitive layer for OpenClaw
 
 They work independently but integrate through shared conventions: global event buses for cross-plugin communication, growth vectors as a common output format, and nightshift as the shared scheduler for background processing.
 
+See [openclaw-metacognitive-suite](https://github.com/CoderofTheWest/openclaw-metacognitive-suite) for the full picture.
+
 ## License
 
 MIT
