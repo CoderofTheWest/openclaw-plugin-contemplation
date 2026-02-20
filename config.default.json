@@ -1,0 +1,28 @@
+{
+  "enabled": true,
+  "_note": "Output paths resolved per-agent at runtime from workspace metadata. Set output.growthVectorsPath/insightsPath to override.",
+  "passes": {
+    "1": { "delayMs": 0, "prompt": "Initial exploration of the inquiry. Clarify what is unknown and why it matters." },
+    "2": { "delayMs": 14400000, "prompt": "Deeper reflection. Connect this inquiry to prior patterns and constraints." },
+    "3": { "delayMs": 72000000, "prompt": "Final synthesis. Produce a concise growth vector with practical implications." }
+  },
+  "extraction": {
+    "entropyThreshold": 0.5,
+    "keywords": ["wonder", "curious", "don't understand", "unclear", "how does", "why"],
+    "maxGapsPerExchange": 2
+  },
+  "llm": {
+    "endpoint": "http://localhost:11434/api/generate",
+    "model": "deepseek-v3.1:671b-cloud",
+    "temperature": 0.6,
+    "maxTokens": 700,
+    "timeoutMs": 45000
+  },
+  "nightshift": {
+    "priority": 50
+  },
+  "tagging": {
+    "enabled": true
+  },
+  "output": {}
+}

@@ -1,0 +1,36 @@
+{
+  "name": "openclaw-plugin-contemplation",
+  "version": "0.1.0",
+  "description": "Self-directed contemplative inquiry for OpenClaw agents. Multi-pass processing of knowledge gaps over 24 hours with LLM topic tagging.",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test/test.js"
+  },
+  "keywords": [
+    "openclaw",
+    "plugin",
+    "contemplation",
+    "inquiry",
+    "identity",
+    "learning",
+    "knowledge-gaps"
+  ],
+  "author": "Chris Hunt & Clint",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "openclaw": {
+    "extensions": ["./index.js"]
+  },
+  "files": [
+    "index.js",
+    "openclaw.plugin.json",
+    "config.default.json",
+    "lib/"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/CoderofTheWest/openclaw-plugin-contemplation"
+  }
+}
