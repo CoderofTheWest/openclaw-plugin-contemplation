@@ -1,5 +1,5 @@
 {
-  "id": "contemplation",
+  "id": "openclaw-plugin-contemplation",
   "name": "Contemplative Inquiry",
   "description": "Self-directed contemplative inquiry. Generates questions from knowledge gaps, processes in 3 passes over 24 hours.",
   "version": "0.1.0",
