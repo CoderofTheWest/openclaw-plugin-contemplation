@@ -300,14 +300,25 @@ module.exports = {
       // Skip heartbeat-originated turns — only extract gaps from real conversation
       if (event.metadata?.isHeartbeat) return;
 
+      // Skip document/file processing exchanges — these aren't conversation
+      // PDF content, ebook processing, etc. generate noise (rhetorical questions,
+      // marketing copy) that the extractor would misclassify as knowledge gaps.
+      const messages = event.messages || [];
+      const firstUserMsg = messages.find(m => m.role === 'user');
+      const userText = typeof firstUserMsg?.content === 'string' ? firstUserMsg.content :
+        Array.isArray(firstUserMsg?.content) ? firstUserMsg.content.map(p => p?.text || '').join(' ') : '';
+      if (/(?:\.pdf|\.docx?|\.txt|\.epub|\.md)\b/i.test(userText) &&
+          userText.length > 2000) {
+        api.logger.debug(`[Contemplation:${ctx.agentId}] Skipping document processing exchange`);
+        return;
+      }
+
       const state = getState(ctx.agentId);
 
       // Cache workspace path from event metadata
       if (event.metadata?.workspace) {
         state.workspacePath = event.metadata.workspace;
       }
-
-      const messages = event.messages || [];
 
       let entropy = 0;
       if (api.stability?.getEntropy) {

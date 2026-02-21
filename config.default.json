@@ -8,7 +8,7 @@
   },
   "extraction": {
     "entropyThreshold": 0.5,
-    "keywords": ["wonder", "curious", "don't understand", "unclear", "how does", "why"],
+    "keywords": ["I wonder", "I'm curious", "don't understand", "unclear", "I need to learn"],
     "maxGapsPerExchange": 2
   },
   "llm": {
