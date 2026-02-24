@@ -238,56 +238,11 @@ module.exports = {
     }
 
     // -----------------------------------------------------------------
-    // HOOK: before_agent_start — Surface active/completed contemplations
+    // Context injection REMOVED — contemplation is a background pipeline.
+    // gaps → inquiries → nightshift passes → crystallization → growth vectors.
+    // Growth vectors are surfaced by the stability plugin when relevant.
+    // Use contemplation.getState gateway method to check pipeline status.
     // -----------------------------------------------------------------
-    // Inject contemplation state so the agent knows what it's been
-    // thinking about and can reference completed insights naturally.
-    // Priority 7: between stability (5) and continuity (10).
-
-    api.on('before_agent_start', async (event, ctx) => {
-      const state = getState(ctx.agentId);
-      const inquiries = state.store.list();
-
-      // Gather active (in_progress) inquiries
-      const active = inquiries.filter(i => i.status === 'in_progress');
-
-      // Gather recently completed inquiries (last 7 days)
-      const sevenDaysAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
-      const recentCompleted = inquiries.filter(i =>
-        i.status === 'completed' && i.completed && Date.parse(i.completed) > sevenDaysAgo
-      );
-
-      // Nothing to inject
-      if (active.length === 0 && recentCompleted.length === 0) return {};
-
-      const lines = ['[CONTEMPLATION STATE]'];
-
-      if (active.length > 0) {
-        lines.push(`Active inquiries: ${active.length}`);
-        for (const inq of active.slice(0, 3)) { // cap at 3 to stay concise
-          const completedPasses = inq.passes.filter(p => p.completed).length;
-          const totalPasses = inq.passes.length;
-          const passLabels = ['initial', 'settling', 'synthesis'];
-          const currentLabel = passLabels[completedPasses] || `pass ${completedPasses + 1}`;
-          lines.push(`- "${inq.question.substring(0, 120)}" (pass ${completedPasses + 1} of ${totalPasses} — ${currentLabel})`);
-        }
-      }
-
-      if (recentCompleted.length > 0) {
-        lines.push('');
-        lines.push(`Recent insights (last 7 days): ${recentCompleted.length}`);
-        for (const inq of recentCompleted.slice(0, 3)) { // cap at 3
-          const pass3 = inq.passes.find(p => p.number === 3);
-          const insight = (pass3?.output || '').substring(0, 200);
-          lines.push(`- Q: "${inq.question.substring(0, 100)}"`);
-          if (insight) {
-            lines.push(`  Insight: "${insight}"`);
-          }
-        }
-      }
-
-      return { prependContext: lines.join('\n') };
-    }, { priority: 7 });
 
     // -----------------------------------------------------------------
     // HOOK: agent_end — SECONDARY gap extraction from raw conversation
@@ -352,23 +307,11 @@ module.exports = {
     });
 
     // -----------------------------------------------------------------
-    // HOOK: heartbeat — Run due passes during office hours
+    // Heartbeat pass execution REMOVED — passes now run exclusively via
+    // the nightshift task runner (registered above). The heartbeat hook
+    // was bypassing the nightshift queue and running passes during
+    // daytime hours whenever user was idle for 5+ minutes.
     // -----------------------------------------------------------------
-
-    api.on('heartbeat', async (event, ctx) => {
-      const state = getState(ctx.agentId);
-
-      if (global.__ocNightshift?.isInOfficeHours && !global.__ocNightshift.isInOfficeHours(ctx.agentId)) {
-        return;
-      }
-
-      if (global.__ocNightshift?.isUserActive && global.__ocNightshift.isUserActive(ctx.agentId)) {
-        return;
-      }
-
-      await runOneDuePass(state, ctx);
-      await persistCompletedInsights(state, event);
-    });
 
     // -----------------------------------------------------------------
     // HOOK: session_end — Persist any completed insights
@@ -414,6 +357,6 @@ module.exports = {
       });
     });
 
-    api.logger.info('Contemplation plugin registered — metabolism integration + context injection active');
+    api.logger.info('Contemplation plugin registered — metabolism integration active (passes via nightshift only)');
   }
 };
